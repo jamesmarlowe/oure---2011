@@ -1,0 +1,10 @@
+{% for m in list1 %}
+<div style="background-color:red;">
+    {% for n in m %}
+        {% if forloop.first %}{{n.items.0.1}}{% endif %}
+        {{n.items.1.1}}
+    {% endfor %}
+    <hr />
+</div>
+{% endfor %}
+

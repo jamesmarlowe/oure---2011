@@ -1,0 +1,118 @@
+<html>
+<head>
+        <title>Chicago Search</title>
+        <!-- Google Maps Headers -->
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+        <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+        <script type="text/javascript" src="http://www.idesignco.org/apis/hazards/markerclusterer/markerclusterer.js"></script>
+        <script type="text/javascript">
+            function initialize() {
+                var mapcenterpoint = new google.maps.LatLng(41.78,-87.75);
+                var myOptions = {
+                    zoom: 6,
+                    center: mapcenterpoint,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+                var map = new google.maps.Map(document.getElementById("map_canvas"),
+                                              myOptions);
+                var markers = [];
+                {% for h in listings %}
+                var infowindow{{ forloop.counter }} = new google.maps.InfoWindow();
+                var location{{ forloop.counter }} = new google.maps.LatLng({{ h.location.y }},{{ h.location.x }});
+                var marker{{ forloop.counter }} = new google.maps.Marker({position: location{{ forloop.counter }},title:"{{h.name}}"});
+                infowindow{{ forloop.counter }}.setContent("{{h.name}}, Address:{{h.number}} {{h.street}}, Keywords:");
+                google.maps.event.addListener(marker{{ forloop.counter }}, 'click', function() {infowindow{{ forloop.counter }}.open(map, marker{{ forloop.counter }});});
+                markers.push(marker{{ forloop.counter }});
+                {% endfor %}
+                var markerCluster = new MarkerClusterer(map, markers);
+            }
+            </script>
+<style type="text/css">
+body {
+  background-image:url('http://www.free.designquery.com/wallpaper/sq001noir_1024x768.jpg');
+}
+#map_topper {
+  -moz-border-radius: 15px 15px 0px 0px;
+  -ms-border-radius: 15px 15px 0px 0px;
+  -o-border-radius: 15px 15px 0px 0px;
+  -webkit-border-radius: 15px 15px 0px 0px;
+  border-radius: 15px 15px 0px 0px;
+  padding:5px;
+  border:solid black 5px;
+  border-bottom-style:none;
+  background-color:#E6E6E6;
+  position:absolute;
+  top:10px;
+  left:10px;
+  right:10px;
+}
+#map_canvas {
+  -moz-border-radius: 15px;
+  -ms-border-radius: 15px;
+  -o-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  border-radius: 15px;
+  padding:10px;
+  margin:auto;
+  border:solid black 5px;
+  border-top-style:none;
+  position:absolute;
+  top:98px;
+  left:10px;
+  right:10px;
+  bottom:10px;
+}
+table{
+  width:100%;
+}
+td{
+  width:20%;
+}
+select{
+  width:150px;
+}
+.button{
+  -moz-border-radius: 15px;
+  -ms-border-radius: 15px;
+  -o-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  border-radius: 15px;
+  background-color:white;
+}
+</style>
+</head>
+<body onload="initialize()">
+        <!-- Google Maps Section -->
+        <div id="map_topper" >
+            <table style="text-align: center;"><tr>
+                <td><form action="./">Search:<input type="submit" value="go"></td>
+                <td>Keywords:</td>
+                <td>Categories:</td>
+                <td>Zip Codes:</td>
+            </tr><tr>
+                <td><input type="text" name="lat" style="width:25" value="lat;"><input type="text" name="lng" style="width:25;" value="lng"></form></td>
+                <td><select onchange="if (this.selectedIndex > 0) document.location.href=''+this.value">
+                    <option value=""></option>
+                        {% for k in keywords %}
+                            <option value="{{k.keyword}}" >{{k.keyword}}</option>
+                        {% endfor %}
+                </select></td>
+                <td><select onchange="if (this.selectedIndex > 0) document.location.href=''+this.value" >
+                    <option value=""></option>
+                        {% for c in allcategories %}
+                            <option value="{{c.category}}" >{{c.category}}</option>
+                        {% endfor %}
+                </select></td>
+                <td><select onchange="if (this.selectedIndex > 0) document.location.href=''+this.value" >
+                    <option value=""></option>
+                        {% for z in zipcodes %}
+                            <option value="{{z.code}}" >{{z.code}}</option>
+                        {% endfor %}
+                </select></td>
+                <td><div class="button">Place Marker</div></td>
+            </tr></table>
+        </div>
+        <div id="map_canvas" ></div>
+</body>
+</html>

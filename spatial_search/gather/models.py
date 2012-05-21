@@ -1,0 +1,69 @@
+from django.db import models
+from django.contrib.gis.db import models
+from datetime import date
+
+# Create your models here.
+
+class Zipcode(models.Model):
+
+    code = models.IntegerField(max_length=5)
+    #poly = models.PolygonField()
+    objects = models.GeoManager()
+
+    class Meta:
+        verbose_name = 'Zipcode'
+        verbose_name_plural = 'All Zipcodes'
+
+class Categories(models.Model):
+    def __unicode__(self):
+        return str(category)
+
+    category = models.CharField(max_length=100)
+    similar = models.ManyToManyField('self',null=True)
+
+    class Meta:
+        verbose_name = 'Category'
+        verbose_name_plural = '[All] Categories'
+
+class Keywords(models.Model):
+    def __unicode__(self):
+        return str(keyword)
+
+    keyword = models.CharField(max_length=100)
+    similar = models.ManyToManyField('self',null=True)
+
+    class Meta:
+        verbose_name = 'Keyword'
+        verbose_name_plural = 'All Keywords'
+
+class Building(models.Model):
+    def __unicode__(self):
+        return str(self.number)+' '+str(self.street)+':'+str(self.location.x)+','+str(self.location.y)
+
+    name = models.CharField(max_length=100,null=True)
+    number = models.IntegerField(null=True)
+    street = models.CharField(max_length=100,null=True)
+    city = models.CharField(max_length=100,null=True)
+    state = models.CharField(max_length=2,null=True)
+    location = models.PointField()
+    zipcode = models.ForeignKey(Zipcode,null=True)
+    category = models.ManyToManyField(Categories,null=True)
+    keywords = models.ManyToManyField(Keywords,null=True)
+    objects = models.GeoManager()
+
+    class Meta:
+        verbose_name = 'Building'
+        verbose_name_plural = 'All Buildings'
+
+class Listing(models.Model):
+    name = models.CharField(max_length=100,null=True)
+    number = models.IntegerField(null=True)
+    street = models.CharField(max_length=100,null=True)
+    city = models.CharField(max_length=100,null=True)
+    state = models.CharField(max_length=2,null=True)
+    latitude = models.FloatField(null=True)
+    longitude = models.FloatField(null=True)
+    zip = models.IntegerField(null=True)
+    category = models.ForeignKey(Categories,null=True)
+    keyword = models.ForeignKey(Keywords,null=True)
+    
